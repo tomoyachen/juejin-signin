@@ -1,5 +1,6 @@
 # pycharm
 .idea/
+__pycache__/
 
 # juejin.py cookies 信息
 cookies.txt

@@ -1,18 +1,23 @@
 import time
 import schedule
 from robot import Robot
+import juejin
 
 def juejin_signin_job(*args):
-    import juejin
+
     result = juejin.run()
-    if result == 1:
-        Robot().send_markdown("成功", "签到成功、抽奖失败")
-    if result == 2:
+    if result == juejin.SigninStatus.SIGNINED_AND_LOTTERY_DREW:
+        Robot().send_markdown("成功", "签到成功、抽奖成功")
+    elif result == juejin.SigninStatus.SIGNINED:
+        Robot().send_markdown("成功", "签到成功、无需抽奖")
+    elif result == juejin.SigninStatus.LOTTERY_DREW:
         Robot().send_markdown("成功", "无需签到、抽奖成功")
-    if result == 0:
-        Robot().send_markdown("失败", "无需签到、无需抽奖")
-    if result < 0:
+    elif result == juejin.SigninStatus.NORMAL:
+        Robot().send_markdown("成功", "无需签到、无需签到")
+    elif result == juejin.SigninStatus.ERROR:
         Robot().send_markdown("失败", "系统异常")
+    else:
+        Robot().send_markdown("失败", "未知错误")
 
 
 
