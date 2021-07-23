@@ -8,10 +8,10 @@ import requests
 
 class Robot():
 
-    def __init__(self):
+    def __init__(self,access_token,secret):
         self.url = 'https://oapi.dingtalk.com/robot/send'
-        self.access_token = '你的机器人 access token 字段' # 修改后使用
-        self.secret = '你的机器人 secret 字段' # 修改后使用
+        self.access_token = access_token
+        self.secret = secret
 
     def get_sign(self, timestamp):
         secret = self.secret

@@ -12,6 +12,7 @@ chrome_options = Options()
 chrome_options.add_argument('--window-size=1920,1080')
 chrome_options.add_argument('--headless')
 
+
 @unique
 class SigninStatus(Enum):
     NORMAL = 0
@@ -20,34 +21,34 @@ class SigninStatus(Enum):
     LOTTERY_DREW = 3
     ERROR = -1
 
-def get_cookies():
-    with open("cookies.txt", "r") as f:
-        text = f.read()
-    cookies = []
-    try:
-        text = re.sub('"sameSite": "(.+?)",', '"sameSite": "None",', text)
-        cookies = json.loads(text)
-    except json.decoder.JSONDecodeError as e:
-        print("cookies 格式错误", e)
-    except Exception as e:
-        print("未知错误", e)
+# def get_cookies():
+#     with open("cookies.txt", "r") as f:
+#         text = f.read()
+#     cookies = []
+#     try:
+#         text = re.sub('"sameSite": "(.+?)",', '"sameSite": "None",', text)
+#         cookies = json.loads(text)
+#     except json.decoder.JSONDecodeError as e:
+#         print("cookies 格式错误", e)
+#     except Exception as e:
+#         print("未知错误", e)
 
-    return cookies
+#     return cookies
 
-def run():
+def run(cookies):
     result = SigninStatus.NORMAL
 
     browser = webdriver.Chrome(chrome_options=chrome_options)
     browser.get(DOMAIN)
 
-    cookies = get_cookies()
+    # cookies = get_cookies()
 
     if not cookies:
         print("cookies 异常")
         return SigninStatus.ERROR
 
-    for cookie in cookies:
-        browser.add_cookie(cookie)
+    # for cookie in cookies:
+    browser.add_cookie(cookies)
 
     def is_element_present(css):
         try:
@@ -95,5 +96,5 @@ def run():
 
     return result
 
-if __name__ == '__main__':
-    run()
+# if __name__ == '__main__':
+#     run()
