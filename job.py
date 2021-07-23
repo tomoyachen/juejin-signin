@@ -11,7 +11,7 @@ dingtalk_secret = ''
 
 def juejin_signin_job():
 
-    result = juejin.run(cookies=cookies)
+    result = juejin.run(text=cookies)
     if result == juejin.SigninStatus.SIGNINED_AND_LOTTERY_DREW:
         Robot(dingtalk_access_token,dingtalk_secret).send_markdown("成功", "签到成功、抽奖成功")
     elif result == juejin.SigninStatus.SIGNINED:

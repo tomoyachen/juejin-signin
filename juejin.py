@@ -21,34 +21,53 @@ class SigninStatus(Enum):
     LOTTERY_DREW = 3
     ERROR = -1
 
-# def get_cookies():
-#     with open("cookies.txt", "r") as f:
-#         text = f.read()
-#     cookies = []
-#     try:
-#         text = re.sub('"sameSite": "(.+?)",', '"sameSite": "None",', text)
-#         cookies = json.loads(text)
-#     except json.decoder.JSONDecodeError as e:
-#         print("cookies 格式错误", e)
-#     except Exception as e:
-#         print("未知错误", e)
+def get_cookies(text):
+    print("text--------------------------------------------------")
+    print(text)
+    cookies = []
+    try:
+        text = re.sub('"sameSite": "(.+?)",', '"sameSite": "None",', text)
+        cookies = json.loads(text)
+    except json.decoder.JSONDecodeError as e:
+        print("cookies 格式错误", e)
+    except Exception as e:
+        print("未知错误", e)
 
-#     return cookies
+    return cookies
 
-def run(cookies):
+def get_cookies_from_text():
+    with open("cookies.txt", "r") as f:
+        text = f.read()
+    cookies = []
+    try:
+        text = re.sub('"sameSite": "(.+?)",', '"sameSite": "None",', text)
+        cookies = json.loads(text)
+    except json.decoder.JSONDecodeError as e:
+        print("cookies 格式错误", e)
+    except Exception as e:
+        print("未知错误", e)
+
+    return cookies    
+
+def run(text):
     result = SigninStatus.NORMAL
 
     browser = webdriver.Chrome(chrome_options=chrome_options)
     browser.get(DOMAIN)
-
-    # cookies = get_cookies()
+    cookies = get_cookies(text)
+    # cookies = get_cookies_from_text()
+    print("--------------------------------------------------")
+    print(cookies)
+    print("--------------------------------------------------")
 
     if not cookies:
         print("cookies 异常")
         return SigninStatus.ERROR
 
-    # for cookie in cookies:
-    browser.add_cookie(cookies)
+    for cookie in cookies:
+        print("cookie-----------------------------------------")
+        print(cookie)
+        browser.add_cookie(cookie)
 
     def is_element_present(css):
         try:
