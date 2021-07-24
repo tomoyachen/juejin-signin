@@ -26,7 +26,7 @@ def get_cookies(text):
     print(text)
     cookies = []
     try:
-        text = re.sub('"sameSite": "(.+?)",', '"sameSite": "None",', text)
+        text = re.sub("'sameSite': '(.+?)',", "'sameSite': 'None',", text)
         cookies = json.loads(text)
     except json.decoder.JSONDecodeError as e:
         print("cookies 格式错误", e)
@@ -65,6 +65,7 @@ def run(text):
         return SigninStatus.ERROR
 
     for cookie in cookies:
+        cookie.pop('sameSite')
         print("cookie-----------------------------------------")
         print(cookie)
         browser.add_cookie(cookie)
