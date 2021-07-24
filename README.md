@@ -1,7 +1,5 @@
 # 介绍
-每个部件都是相互独立的，可以按需使用。
-值得一提的是，由于是自己使用。所以 cookies 和钉钉机器人 token 使用比较随意。
-建议使用者自己在优化一下，提高安全性。
+掘金签到抽奖 github actions，可以实现定时自动签到抽奖。
 
 juejin.py 
 基于 Selenium 的签到、抽奖脚本。使用 cookies 免登陆。可手动执行。
@@ -15,66 +13,53 @@ robot.py
 app.py 
 基于 flask 的 API 服务。可以使用接口来更新过期的 cookies。
 
-# 安装部署
-## 安装依赖
-在项目根目录使用 poetry 安装依赖，包括 Selenium、schedule、flask 等库。
-```bash
-poetry install
-```
 
-## 配置 chromedriver （或其他浏览器驱动）
+# 快速使用
 
-1.下载 chromedriver
+## fork本仓库
+fork本仓库
 
-淘宝镜像资源地址：http://npm.taobao.org/mirrors/chromedriver/
 
-根据你的 Chrome 版本下载对应的 chromedriver
-
-2.配置到环境变量
-
-windows 放在 Python 安装地址根目录下
-
-mac 与 linux 放在 /usr/local/bin
-
-# 配置 cookies
-> cookies 信息很重要，注意不要泄露。
+## 配置 cookies
 
 1.获取 cookies
 使用 Chrome 插件 `EditThisCookie` 来导出 cookies 列表
 
-2.存放 cookies
+2.使用json压缩工具进行json压缩
 
-手动创建方式：
+3.复制到文本暂存，并且最外层包裹一对单引号 ''
 
-在项目根目录创建 cookies.txt 文件来存放 cookies 列表信息
+```
 
-接口创建方式：
+'[{"domain":".juejin.cn","expirationDate":1634104506,"hostOnly":false,"httpOnly":false,"name":"_tea_utm_cache_2608","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"****","id":1},{"domain":".juejin.cn","expirationDate":1634783500.868403,"hostOnly":false,"httpOnly":false,"name":"MONITOR_WEB_ID","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"****","id":2},{"domain":".juejin.cn","expirationDate":1632306612.470033,"hostOnly":false,"httpOnly":true,"name":"n_mh","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"****","id":3},{"domain":".juejin.cn","expirationDate":1627122573.421149,"hostOnly":false,"httpOnly":false,"name":"passport_csrf_token","path":"/","sameSite":"no_restriction","secure":true,"session":false,"storeId":"0","value":"****","id":4},{"domain":".juejin.cn","expirationDate":1627122573.421113,"hostOnly":false,"httpOnly":false,"name":"passport_csrf_token_default","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"****","id":5},{"domain":".juejin.cn","expirationDate":1627122612.470014,"hostOnly":false,"httpOnly":true,"name":"sessionid","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"****","id":6},{"domain":".juejin.cn","expirationDate":1627122612.470023,"hostOnly":false,"httpOnly":true,"name":"sessionid_ss","path":"/","sameSite":"no_restriction","secure":true,"session":false,"storeId":"0","value":"****","id":7},{"domain":".juejin.cn","expirationDate":1653042612.469971,"hostOnly":false,"httpOnly":true,"name":"sid_guard","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"****","id":8},{"domain":".juejin.cn","expirationDate":1627122612.470004,"hostOnly":false,"httpOnly":true,"name":"sid_tt","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"****","id":9},{"domain":".juejin.cn","expirationDate":1627122612.469983,"hostOnly":false,"httpOnly":true,"name":"uid_tt","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"****","id":10},{"domain":".juejin.cn","expirationDate":1627122612.469993,"hostOnly":false,"httpOnly":true,"name":"uid_tt_ss","path":"/","sameSite":"no_restriction","secure":true,"session":false,"storeId":"0","value":"****","id":11},{"domain":"juejin.cn","expirationDate":1658543501,"hostOnly":true,"httpOnly":false,"name":"tt_scid","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":".****","id":12},{"domain":"juejin.cn","expirationDate":1657155093,"hostOnly":true,"httpOnly":false,"name":"ttcid","path":"/","sameSite":"unspecified","secure":false,"session":false,"storeId":"0","value":"****","id":13}]'
 
-启动 flask 服务后，通过接口更新 cookies 信息
-    
-# 配置 钉钉机器人 
-> token 信息很重要，注意不要泄露。
 
-robot.py 中 access_token 与 secret 是钉钉寄信人信息
-请参考官网文档配置后把上述信息填入
+
+```
+
+
+
+## 配置钉钉推送
+
 https://developers.dingtalk.com/document/app/overview-of-group-robots
+按照上面的官方文档进行配置机器人，获取到 access token 和 secrets
 
-    
-# 使用
-1.手动执行一次
-    
-```bash
-poetry run python juejin.py
-```
+## 创建仓库的 Actions secrets
 
-2.启动定时执行服务
+仓库->Setting->Secrets
 
-```bash
-poetry run python job.py
-```
+创建三个：
 
-3.启动接口服务
-        
-```bash
-poetry run puthon app.py
-```
+- COOKIES 使用粘贴板中cookies数据， 注意：最外层需要用单引号包裹住 ''
+- DING_ACCESS_TOKEN  钉钉的access token
+- DING_SECRET 钉钉的 secrets
+
+
+
+
+## 启用GitHub actions
+
+点击仓库下方的actions 启用workflow
+
+
+ 
