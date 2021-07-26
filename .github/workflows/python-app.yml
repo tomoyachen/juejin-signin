@@ -8,7 +8,7 @@ on:
     branches:
       - master # 代码提交的时候触发构建部署
   schedule:
-    - cron: "10 2 * * *"
+    - cron: "0 1 * * *"
     # cron表达式，Actions时区是UTC时间，所以上午9点要往前推8个小时
 
 jobs:
