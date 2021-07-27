@@ -6,15 +6,19 @@ import juejin
 def juejin_signin_job(*args):
 
     result = juejin.run()
-    if result == juejin.SigninStatus.SIGNINED_AND_LOTTERY_DREW:
-        Robot().send_markdown("成功", "签到成功、抽奖成功")
-    elif result == juejin.SigninStatus.SIGNINED:
-        Robot().send_markdown("成功", "签到成功、无需抽奖")
-    elif result == juejin.SigninStatus.LOTTERY_DREW:
-        Robot().send_markdown("成功", "无需签到、抽奖成功")
-    elif result == juejin.SigninStatus.NORMAL:
+    status = result["status"]
+    points = result["data"]["points"]
+    prize = result["data"]["prize"]
+
+    if status == juejin.SigninStatus.SIGNINED_AND_LOTTERY_DREW:
+        Robot().send_markdown("成功", f"签到成功（{points}）、抽奖成功（{prize}）")
+    elif status == juejin.SigninStatus.SIGNINED:
+        Robot().send_markdown("成功", f"签到成功（{points}）、无需抽奖")
+    elif status == juejin.SigninStatus.LOTTERY_DREW:
+        Robot().send_markdown("成功", f"无需签到、抽奖成功（{prize}）")
+    elif status == juejin.SigninStatus.NORMAL:
         Robot().send_markdown("成功", "无需签到、无需签到")
-    elif result == juejin.SigninStatus.ERROR:
+    elif status == juejin.SigninStatus.ERROR:
         Robot().send_markdown("失败", "系统异常")
     else:
         Robot().send_markdown("失败", "未知错误")

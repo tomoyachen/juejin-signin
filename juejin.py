@@ -34,8 +34,10 @@ def get_cookies():
 
     return cookies
 
-def run():
-    result = SigninStatus.NORMAL
+def run() -> dict:
+    status = SigninStatus.NORMAL
+    points = None
+    prize = None
 
     browser = webdriver.Chrome(chrome_options=chrome_options)
     browser.get(DOMAIN)
@@ -63,7 +65,10 @@ def run():
     if is_element_present('button.signin'):
         print("开始签到")
         browser.find_element_by_css_selector('button.signin').click()
-        result = SigninStatus.SIGNINED
+        status = SigninStatus.SIGNINED
+        time.sleep(1) # 等待弹层出现
+        points = browser.find_element_by_css_selector('span.header-text > span').text
+        print(points)
 
     elif is_element_present('button.signedin'):
         print("无需签到")
@@ -80,11 +85,15 @@ def run():
         if '免费抽奖：1次' in lottery_text.text:
             print("开始免费抽奖")
             lottery_btn.click()
-            time.sleep(6)
-            if result == SigninStatus.SIGNINED:
-                result = SigninStatus.SIGNINED_AND_LOTTERY_DREW
+            if status == SigninStatus.SIGNINED:
+                status = SigninStatus.SIGNINED_AND_LOTTERY_DREW
             else:
-                result = SigninStatus.LOTTERY_DREW
+                status = SigninStatus.LOTTERY_DREW
+            time.sleep(10) # 等待转完奖品
+            if is_element_present('div.byte-modal__header > span.byte-modal__title'):
+                prize = browser.find_element_by_css_selector('div.byte-modal__body > div > div.title').text
+                print(prize)
+
         else:
             print("无需抽奖")
     else:
@@ -92,6 +101,14 @@ def run():
         return SigninStatus.ERROR
 
     browser.close()
+
+    result = {
+        "status": status,
+        "data": {
+            "points": points,
+            "prize": prize
+        }
+    }
 
     return result
 
