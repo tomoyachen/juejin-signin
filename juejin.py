@@ -74,7 +74,7 @@ def run() -> dict:
         print("无需签到")
     else:
         print("签到异常")
-        return SigninStatus.ERROR
+        status = SigninStatus.ERROR
 
     browser.get(f'{DOMAIN}/user/center/lottery?from=sign_in_success')
     time.sleep(3)
@@ -98,7 +98,7 @@ def run() -> dict:
             print("无需抽奖")
     else:
         print("抽奖异常")
-        return SigninStatus.ERROR
+        status = SigninStatus.ERROR
 
     browser.close()
 
