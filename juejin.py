@@ -20,13 +20,18 @@ class SigninStatus(Enum):
     LOTTERY_DREW = 3
     ERROR = -1
 
-def get_cookies():
-    with open("cookies.txt", "r") as f:
-        text = f.read()
+def get_cookies() -> list:
     cookies = []
     try:
+        with open("cookies.txt", "r", encoding='utf8') as f:
+            text = f.read()
         text = re.sub('"sameSite": "(.+?)",', '"sameSite": "None",', text)
         cookies = json.loads(text)
+    except FileNotFoundError as e:
+        print("文件不存在，已自动创建", e)
+        new_file = open('cookies.txt', 'w', encoding='utf8')
+        new_file.write('使用 Chrome 插件 `EditThisCookie` 来导出 cookies 列表，粘入此文件')
+        new_file.close()
     except json.decoder.JSONDecodeError as e:
         print("cookies 格式错误", e)
     except Exception as e:
@@ -39,7 +44,7 @@ def run() -> dict:
     points = None
     prize = None
 
-    browser = webdriver.Chrome(chrome_options=chrome_options)
+    browser = webdriver.Chrome(options=chrome_options)
     browser.get(DOMAIN)
 
     cookies = get_cookies()

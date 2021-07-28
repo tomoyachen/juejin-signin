@@ -5,3 +5,5 @@ __pycache__/
 # juejin.py cookies 信息
 cookies.txt
 
+# 配置文件
+config.yaml

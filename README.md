@@ -46,7 +46,7 @@ mac 与 linux 放在 /usr/local/bin
 
 手动创建方式：
 
-在项目根目录创建 cookies.txt 文件来存放 cookies 列表信息
+在项目根目录创建 `cookies.txt` 文件来存放 cookies 列表信息
 
 接口创建方式：
 
@@ -55,7 +55,14 @@ mac 与 linux 放在 /usr/local/bin
 # 配置 钉钉机器人 
 > token 信息很重要，注意不要泄露。
 
-robot.py 中 access_token 与 secret 是钉钉寄信人信息
+1.在项目根目录创建 `config.yaml` 文件来存放钉钉机器人令牌
+
+```yaml
+# dingtalk token & secret
+ACCESS_TOKEN: '你的机器人 access token 字段'
+SECRET: '你的机器人 secret 字段'
+```
+
 请参考官网文档配置后把上述信息填入
 https://developers.dingtalk.com/document/app/overview-of-group-robots
 

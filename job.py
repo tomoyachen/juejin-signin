@@ -11,19 +11,24 @@ def juejin_signin_job(*args):
     prize = result["data"]["prize"]
 
     if status == juejin.SigninStatus.SIGNINED_AND_LOTTERY_DREW:
-        Robot().send_markdown("成功", f"签到成功（{points}）、抽奖成功（{prize}）")
+        noty_title, noty_msg = "成功", f"签到成功（{points}）、抽奖成功（{prize}）"
     elif status == juejin.SigninStatus.SIGNINED:
-        Robot().send_markdown("成功", f"签到成功（{points}）、无需抽奖")
+        noty_title, noty_msg = "成功", f"签到成功（{points}）、无需抽奖"
     elif status == juejin.SigninStatus.LOTTERY_DREW:
-        Robot().send_markdown("成功", f"无需签到、抽奖成功（{prize}）")
+        noty_title, noty_msg = "成功", f"无需签到、抽奖成功（{prize}）"
     elif status == juejin.SigninStatus.NORMAL:
-        Robot().send_markdown("成功", "无需签到、无需签到")
+        noty_title, noty_msg = "成功", "无需签到、无需签到"
     elif status == juejin.SigninStatus.ERROR:
-        Robot().send_markdown("失败", "系统异常")
+        noty_title, noty_msg = "失败", "系统异常"
     else:
-        Robot().send_markdown("失败", "未知错误")
+        noty_title, noty_msg = "失败", "未知错误"
 
+    noty_result = Robot().send_markdown(noty_title, noty_msg)
 
+    if noty_result['errcode'] == 0:
+        print('通知成功')
+    else:
+        print('通知失败', noty_result['errmsg'])
 
 # 每隔 3600秒 执行一次 job
 # schedule.every(3600).seconds.do(juejin_signin_job)

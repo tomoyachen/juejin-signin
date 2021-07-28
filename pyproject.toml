@@ -10,6 +10,7 @@ selenium = "^3.141.0"
 schedule = "^1.1.0"
 flask = "^2.0.1"
 requests = "^2.26.0"
+pyyaml = "^5.4.1"
 
 [tool.poetry.dev-dependencies]
 
