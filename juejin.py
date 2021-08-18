@@ -82,6 +82,9 @@ def run() -> dict:
         status = SigninStatus.ERROR
 
     browser.get(f'{DOMAIN}/user/center/lottery?from=sign_in_success')
+    if '/lottery' not in browser.current_url:
+        lottery_links = browser.find_elements_by_xpath("//*[contains(text(),' 幸运抽奖')]")
+        lottery_links[1 if len(lottery_links) > 1 else 0].click()
     time.sleep(3)
 
     if is_element_present('div.turntable-item.item.lottery'):
