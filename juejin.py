@@ -20,6 +20,13 @@ class SigninStatus(Enum):
     LOTTERY_DREW = 3
     ERROR = -1
 
+class JobResult():
+    def __init__(self, status = SigninStatus.NORMAL, msg = ""):
+        self.status = status
+        self.msg = msg
+        self.points = None,
+        self.prize = None
+
 def get_cookies() -> list:
     cookies = []
     try:
@@ -39,10 +46,8 @@ def get_cookies() -> list:
 
     return cookies
 
-def run() -> dict:
-    status = SigninStatus.NORMAL
-    points = None
-    prize = None
+def run() -> JobResult:
+    job_result = JobResult(SigninStatus.NORMAL)
 
     browser = webdriver.Chrome(options=chrome_options)
     browser.get(DOMAIN)
@@ -51,7 +56,7 @@ def run() -> dict:
 
     if not cookies:
         print("cookies 异常")
-        return SigninStatus.ERROR
+        return JobResult(SigninStatus.ERROR, "cookies 异常")
 
     for cookie in cookies:
         browser.add_cookie(cookie)
@@ -64,27 +69,33 @@ def run() -> dict:
         return True
 
     browser.refresh()
+
+    if not is_element_present('.nav-item .avatar'):
+        print("cookies 失效")
+        return JobResult(SigninStatus.ERROR, "cookies 失效")
+
     browser.get(f'{DOMAIN}/user/center/signin?from=main_page')
     time.sleep(3)
 
     if is_element_present('button.signin'):
         print("开始签到")
         browser.find_element_by_css_selector('button.signin').click()
-        status = SigninStatus.SIGNINED
+        job_result.status = SigninStatus.SIGNINED
         time.sleep(1) # 等待弹层出现
-        points = browser.find_element_by_css_selector('span.header-text > span').text
-        print(points)
+        job_result.points = browser.find_element_by_css_selector('span.header-text > span').text
+        print(job_result.points)
 
     elif is_element_present('button.signedin'):
         print("无需签到")
     else:
         print("签到异常")
-        status = SigninStatus.ERROR
+        job_result.status = SigninStatus.ERROR
+        job_result.msg = "签到异常"
 
     browser.get(f'{DOMAIN}/user/center/lottery?from=sign_in_success')
     if '/lottery' not in browser.current_url:
         lottery_links = browser.find_elements_by_xpath("//*[contains(text(),' 幸运抽奖')]")
-        lottery_links[1 if len(lottery_links) > 1 else 0].click()
+        lottery_links[-1].click()
     time.sleep(3)
 
     if is_element_present('div.turntable-item.item.lottery'):
@@ -93,32 +104,25 @@ def run() -> dict:
         if '免费抽奖：1次' in lottery_text.text:
             print("开始免费抽奖")
             lottery_btn.click()
-            if status == SigninStatus.SIGNINED:
-                status = SigninStatus.SIGNINED_AND_LOTTERY_DREW
+            if job_result.status == SigninStatus.SIGNINED:
+                job_result.status = SigninStatus.SIGNINED_AND_LOTTERY_DREW
             else:
-                status = SigninStatus.LOTTERY_DREW
+                job_result.status = SigninStatus.LOTTERY_DREW
             time.sleep(10) # 等待转完奖品
             if is_element_present('div.byte-modal__header > span.byte-modal__title'):
-                prize = browser.find_element_by_css_selector('div.byte-modal__body > div > div.title').text
-                print(prize)
+                job_result.prize = browser.find_element_by_css_selector('div.byte-modal__body > div > div.title').text
+                print(job_result.prize)
 
         else:
             print("无需抽奖")
     else:
         print("抽奖异常")
-        status = SigninStatus.ERROR
+        job_result.status = SigninStatus.ERROR
+        job_result.msg += "抽奖异常"
 
     browser.close()
 
-    result = {
-        "status": status,
-        "data": {
-            "points": points,
-            "prize": prize
-        }
-    }
-
-    return result
+    return job_result
 
 if __name__ == '__main__':
     run()

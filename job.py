@@ -5,10 +5,15 @@ import juejin
 
 def juejin_signin_job(*args):
 
-    result = juejin.run()
-    status = result["status"]
-    points = result["data"]["points"]
-    prize = result["data"]["prize"]
+    try:
+        job_result = juejin.run()
+    except Exception as e:
+        Robot().send_markdown('失败', f'脚本出错 {e}')
+
+    status = job_result.status
+    points = job_result.points
+    prize = job_result.prize
+    msg = job_result.msg
 
     if status == juejin.SigninStatus.SIGNINED_AND_LOTTERY_DREW:
         noty_title, noty_msg = "成功", f"签到成功（{points}）、抽奖成功（{prize}）"
@@ -19,7 +24,7 @@ def juejin_signin_job(*args):
     elif status == juejin.SigninStatus.NORMAL:
         noty_title, noty_msg = "成功", "无需签到、无需签到"
     elif status == juejin.SigninStatus.ERROR:
-        noty_title, noty_msg = "失败", "系统异常"
+        noty_title, noty_msg = "失败", f"{msg}"
     else:
         noty_title, noty_msg = "失败", "未知错误"
 
