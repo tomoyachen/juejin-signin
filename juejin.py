@@ -5,6 +5,9 @@ import re
 import json
 import time
 from enum import Enum, unique
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 DOMAIN = 'https://juejin.cn'
 
@@ -74,12 +77,14 @@ def run() -> JobResult:
         print("cookies 失效")
         return JobResult(SigninStatus.ERROR, "cookies 失效")
 
-    browser.get(f'{DOMAIN}/user/center/signin?from=main_page')
+    # browser.get(f'{DOMAIN}/user/center/signin?from=main_page')
+    WebDriverWait(browser, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, '.signin-tip.signin button'))).click()
     time.sleep(3)
 
     if is_element_present('button.signin'):
         print("开始签到")
-        browser.find_element_by_css_selector('button.signin').click()
+        # browser.find_element_by_css_selector('button.signin').click()
+        WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button.signin'))).click()
         job_result.status = SigninStatus.SIGNINED
         time.sleep(1) # 等待弹层出现
         job_result.points = browser.find_element_by_css_selector('span.header-text > span').text
