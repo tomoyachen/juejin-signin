@@ -22,7 +22,7 @@ def juejin_signin_job(*args):
     elif status == juejin.SigninStatus.LOTTERY_DREW:
         noty_title, noty_msg = "成功", f"无需签到、抽奖成功（{prize}）"
     elif status == juejin.SigninStatus.NORMAL:
-        noty_title, noty_msg = "成功", "无需签到、无需签到"
+        noty_title, noty_msg = "成功", "无需签到、无需抽奖"
     elif status == juejin.SigninStatus.ERROR:
         noty_title, noty_msg = "失败", f"{msg}"
     else:
