@@ -36,11 +36,15 @@ windows 放在 Python 安装地址根目录下
 
 mac 与 linux 放在 /usr/local/bin
 
+* 记得关闭 Chrome 的自动更新，否则一段时间后会出现与chromedriver版本不匹配的问题
+
 # 配置 cookies
 > cookies 信息很重要，注意不要泄露。
 
 1.获取 cookies
 使用 Chrome 插件 `EditThisCookie` 来导出 cookies 列表
+
+* juejin 的 cookies 大概 60 天左右失效
 
 2.存放 cookies
 
