@@ -1,6 +1,6 @@
 # 介绍
 每个部件都是相互独立的，可以按需使用。
-值得一提的是，由于是自己使用。所以 cookies 和钉钉机器人 token 使用比较随意。
+值得一提的是，由于是自己使用。所以 cookies 和钉钉/ 飞书机器人 token 使用比较随意。
 建议使用者自己在优化一下，提高安全性。
 
 juejin.py 
@@ -10,7 +10,7 @@ job.py
 基于 schedule 的轻量化定时任务。启动后会按照设定时间定时执行 juejin 脚本。
 
 robot.py
-基于 钉钉 webhook 的通知服务。可以在 job 执行后发送通知消息。
+基于 钉钉/ 飞书 webhook 的通知服务。可以在 job 执行后发送通知消息。
 
 app.py 
 基于 flask 的 API 服务。可以使用接口来更新过期的 cookies。
@@ -56,20 +56,29 @@ mac 与 linux 放在 /usr/local/bin
 
 启动 flask 服务后，通过接口更新 cookies 信息
     
-# 配置 钉钉机器人 
-> token 信息很重要，注意不要泄露。
+# 配置 钉钉机器人/ 飞书机器人（默认）
+> token & secret 信息很重要，注意不要泄露。
 
-1.在项目根目录创建 `config.yaml` 文件来存放钉钉机器人令牌
+1.在项目根目录创建 `config.yaml` 文件来存放机器人认证信息
 
 ```yaml
-# dingtalk token & secret
-ACCESS_TOKEN: '你的机器人 access token 字段'
-SECRET: '你的机器人 secret 字段'
+# Dingtalk robot token & secret
+DINGTALK_ACCESS_TOKEN: "你的机器人 access token 字段"
+DINGTALK_SECRET: "你的机器人 secret 字段"
+
+# Feishu robot token & secret (optional)
+FEISHU_ACCESS_TOKEN: "你的机器人 access token 字段"
+FEISHU_SECRET: "你的机器人 secret 字段（机器人开启了签名校验才需要）"
+
+# Which one do you want to use? "FEISHU" or "DINGTALK"
+ROBOT_TYPE: "FEISHU"
 ```
 
 请参考官网文档配置后把上述信息填入
 https://developers.dingtalk.com/document/app/overview-of-group-robots
+https://www.feishu.cn/hc/zh-CN/articles/360024984973
 
+修改 job.py 中你要使用的机器人
     
 # 使用
 1.手动执行一次

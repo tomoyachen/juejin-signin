@@ -8,7 +8,7 @@ def juejin_signin_job(*args):
     try:
         job_result = juejin.run()
     except Exception as e:
-        Robot().send_markdown('失败', f'脚本出错 {e}')
+        Robot().send('失败', f'脚本出错 {e}')
 
     status = job_result.status
     points = job_result.points
@@ -28,7 +28,7 @@ def juejin_signin_job(*args):
     else:
         noty_title, noty_msg = "失败", "未知错误"
 
-    noty_result = Robot().send_markdown(noty_title, noty_msg)
+    noty_result = Robot().send(noty_title, noty_msg)
 
     if noty_result['errcode'] == 0:
         print('通知成功')
