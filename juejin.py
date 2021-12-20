@@ -98,10 +98,10 @@ def run() -> JobResult:
         lottery_links[-1].click()
     time.sleep(3)
 
-    if is_element_present('div.turntable-item.item.lottery'):
-        lottery_text = browser.find_element_by_css_selector('div.turntable-item.item.lottery > div.text')
-        lottery_btn = browser.find_element_by_css_selector('div.turntable-item.item.lottery')
-        if '免费抽奖：1次' in lottery_text.text:
+    if is_element_present('#turntable-item-0'):
+        lottery_btn = browser.find_element_by_css_selector('#turntable-item-0')
+        browser.execute_script("arguments[0].scrollIntoView();", lottery_btn)
+        if is_element_present("div.text.text-free"):
             print("开始免费抽奖")
             lottery_btn.click()
             if job_result.status == SigninStatus.SIGNINED:
