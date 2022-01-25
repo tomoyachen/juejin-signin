@@ -8,7 +8,9 @@ def juejin_signin_job(*args):
     try:
         job_result = juejin.run()
     except Exception as e:
+        print('脚本出错', e)
         Robot().send('失败', f'脚本出错 {e}')
+        return False
 
     status = job_result.status
     points = job_result.points
