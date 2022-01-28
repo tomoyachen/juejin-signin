@@ -3,8 +3,11 @@ import schedule
 from robot import Robot
 import juejin
 
+JUEJIN_COOKIES_EXPIRES_DIFF = 7
+
 def juejin_signin_job(*args):
 
+    # 执行签到脚本并发送通知
     try:
         job_result = juejin.run()
     except Exception as e:
@@ -36,6 +39,11 @@ def juejin_signin_job(*args):
         print('通知成功')
     else:
         print('通知失败', noty_result['errmsg'])
+
+    # 检查 cookies 过期时间
+    diff = juejin.check_cookies_expires()
+    if diff <= JUEJIN_COOKIES_EXPIRES_DIFF:
+        Robot().send("提醒", f"Cookies 还有 {diff} 天过期，请及时更换！")
 
 # 每隔 3600秒 执行一次 job
 # schedule.every(3600).seconds.do(juejin_signin_job)

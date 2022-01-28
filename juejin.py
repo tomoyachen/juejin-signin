@@ -101,9 +101,9 @@ def run() -> JobResult:
         lottery_links[-1].click()
     time.sleep(3)
 
-    # 沾沾幸运值
+    # 沾喜气
     if is_element_present('#stick-txt-0'):
-        print("开始沾沾幸运值")
+        print("开始沾喜气")
         lucky_btn = browser.find_element_by_css_selector('#stick-txt-0')
         lucky_btn.click()
         if is_element_present('.wrapper > .footer > button'):
@@ -111,12 +111,12 @@ def run() -> JobResult:
                 modal_confirm_btn = browser.find_element_by_css_selector('.wrapper > .footer > button')
                 modal_confirm_btn.click()
             except Exception as e:
-                print("关闭沾沾弹层失败", e)
+                print("关闭沾喜气弹层失败", e)
                 browser.refresh()
         else:
             browser.refresh()
     else:
-        print("沾沾幸运值异常")
+        print("沾喜气异常")
 
     # 抽奖
     if is_element_present('#turntable-item-0'):
@@ -144,6 +144,21 @@ def run() -> JobResult:
     browser.close()
 
     return job_result
+
+def check_cookies_expires() -> int:
+    """
+    获取距离过期时间还有几天
+    :return:
+    """
+    for cookie in get_cookies():
+        if cookie.get("name") == "sessionid":
+            expiration_date = int(cookie.get("expirationDate") or 0)
+
+            from datetime import datetime, timedelta
+            now:datetime = datetime.utcnow() + timedelta(hours=8)
+            expires:datetime = datetime.utcfromtimestamp(expiration_date) + timedelta(hours=8)
+
+            return (expires - now).days
 
 if __name__ == '__main__':
     run()
