@@ -74,9 +74,11 @@ def run() -> JobResult:
         print("cookies 失效")
         return JobResult(SigninStatus.ERROR, "cookies 失效")
 
+    # 访问签到页
     browser.get(f'{DOMAIN}/user/center/signin?from=main_page')
     time.sleep(3)
 
+    # 签到
     if is_element_present('button.signin'):
         print("开始签到")
         browser.find_element_by_css_selector('button.signin').click()
@@ -92,12 +94,31 @@ def run() -> JobResult:
         job_result.status = SigninStatus.ERROR
         job_result.msg = "签到异常"
 
+    # 访问抽奖页
     browser.get(f'{DOMAIN}/user/center/lottery?from=sign_in_success')
     if '/lottery' not in browser.current_url:
         lottery_links = browser.find_elements_by_xpath("//*[contains(text(),' 幸运抽奖')]")
         lottery_links[-1].click()
     time.sleep(3)
 
+    # 沾喜气
+    if is_element_present('#stick-txt-0'):
+        print("开始沾喜气")
+        lucky_btn = browser.find_element_by_css_selector('#stick-txt-0')
+        lucky_btn.click()
+        if is_element_present('.wrapper > .footer > button'):
+            try:
+                modal_confirm_btn = browser.find_element_by_css_selector('.wrapper > .footer > button')
+                modal_confirm_btn.click()
+            except Exception as e:
+                print("关闭沾喜气弹层失败", e)
+                browser.refresh()
+        else:
+            browser.refresh()
+    else:
+        print("沾喜气异常")
+
+    # 抽奖
     if is_element_present('#turntable-item-0'):
         lottery_btn = browser.find_element_by_css_selector('#turntable-item-0')
         browser.execute_script("arguments[0].scrollIntoView();", lottery_btn)
@@ -123,6 +144,21 @@ def run() -> JobResult:
     browser.close()
 
     return job_result
+
+def check_cookies_expires() -> int:
+    """
+    获取距离过期时间还有几天
+    :return:
+    """
+    for cookie in get_cookies():
+        if cookie.get("name") == "sessionid":
+            expiration_date = int(cookie.get("expirationDate") or 0)
+
+            from datetime import datetime, timedelta
+            now:datetime = datetime.utcnow() + timedelta(hours=8)
+            expires:datetime = datetime.utcfromtimestamp(expiration_date) + timedelta(hours=8)
+
+            return (expires - now).days
 
 if __name__ == '__main__':
     run()
