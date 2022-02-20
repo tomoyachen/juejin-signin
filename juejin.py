@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.webdriver import WebDriver
 import re
 import json
 import time
@@ -11,6 +12,8 @@ DOMAIN = 'https://juejin.cn'
 chrome_options = Options()
 chrome_options.add_argument('--window-size=1920,1080')
 chrome_options.add_argument('--headless')
+
+browser: WebDriver = None
 
 @unique
 class SigninStatus(Enum):
@@ -49,7 +52,9 @@ def get_cookies() -> list:
 def run() -> JobResult:
     job_result = JobResult(SigninStatus.NORMAL)
 
+    global browser
     browser = webdriver.Chrome(options=chrome_options)
+    browser.implicitly_wait(3)
     browser.get(DOMAIN)
 
     cookies = get_cookies()
@@ -105,6 +110,7 @@ def run() -> JobResult:
     if is_element_present('#stick-txt-0'):
         print("开始沾喜气")
         lucky_btn = browser.find_element_by_css_selector('#stick-txt-0')
+        close_footer_banner()
         lucky_btn.click()
         if is_element_present('.wrapper > .footer > button'):
             try:
@@ -141,6 +147,12 @@ def run() -> JobResult:
         job_result.status = SigninStatus.ERROR
         job_result.msg += "抽奖异常"
 
+    # 浏览几篇帖子
+    try:
+        view_articles_from_home_page()
+    except:
+        pass
+
     browser.close()
 
     return job_result
@@ -159,6 +171,43 @@ def check_cookies_expires() -> int:
             expires:datetime = datetime.utcfromtimestamp(expiration_date) + timedelta(hours=8)
 
             return (expires - now).days
+
+def close_footer_banner():
+    """
+    关闭底部的广告位
+    :return:
+    """
+    elements = browser.find_elements_by_css_selector('.ion-close')
+    for element in elements:
+        if element.is_displayed():
+            element.click()
+
+# TODO 显性等待太多..
+def view_articles_from_home_page():
+    """
+    在首页浏览几篇文章
+    :return:
+    """
+    browser.get(DOMAIN)
+    time.sleep(5)
+    articles = browser.find_elements_by_css_selector('.title-row > .title')
+    first_tab = browser.current_window_handle
+    for acticle in articles:
+        browser.switch_to.window(first_tab)
+        browser.execute_script('window.scrollBy(0, 30)')
+        if acticle.is_displayed():
+            close_footer_banner()
+            acticle.click()
+            time.sleep(2)
+            browser.switch_to.window(browser.window_handles[-1])
+            print(f'浏览了 {browser.title}')
+            browser.execute_script('window.scrollBy(0, 200)')
+            time.sleep(1)
+            browser.execute_script('window.scrollBy(0, 300)')
+            time.sleep(1)
+        else:
+            break
+
 
 if __name__ == '__main__':
     run()
