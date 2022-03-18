@@ -137,7 +137,8 @@ def run() -> JobResult:
                 job_result.status = SigninStatus.LOTTERY_DREW
             time.sleep(10) # 等待转完奖品
             if is_element_present('div.byte-modal__header > span.byte-modal__title'):
-                job_result.prize = browser.find_element_by_css_selector('div.byte-modal__body > div > div.title').text
+                modal_title_list = browser.find_elements_by_css_selector('div.byte-modal__body > div > div.title').text
+                job_result.prize = modal_title_list[-1] if modal_title_list else "未知奖励"
                 print(job_result.prize)
 
         else:
