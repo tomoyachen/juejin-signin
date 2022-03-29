@@ -13,8 +13,6 @@ chrome_options = Options()
 chrome_options.add_argument('--window-size=1920,1080')
 chrome_options.add_argument('--headless')
 
-browser: WebDriver = None
-
 @unique
 class SigninStatus(Enum):
     NORMAL = 0
@@ -52,7 +50,6 @@ def get_cookies() -> list:
 def run() -> JobResult:
     job_result = JobResult(SigninStatus.NORMAL)
 
-    global browser
     browser = webdriver.Chrome(options=chrome_options)
     browser.implicitly_wait(3)
     browser.get(DOMAIN)
@@ -110,7 +107,7 @@ def run() -> JobResult:
     if is_element_present('#stick-txt-0'):
         print("开始沾喜气")
         lucky_btn = browser.find_element_by_css_selector('#stick-txt-0')
-        close_footer_banner()
+        close_footer_banner(browser)
         lucky_btn.click()
         if is_element_present('.wrapper > .footer > button'):
             try:
@@ -150,7 +147,7 @@ def run() -> JobResult:
 
     # 浏览几篇帖子
     try:
-        view_articles_from_home_page()
+        view_articles_from_home_page(browser, 3)
     except:
         pass
 
@@ -173,7 +170,7 @@ def check_cookies_expires() -> int:
 
             return (expires - now).days
 
-def close_footer_banner():
+def close_footer_banner(browser: WebDriver):
     """
     关闭底部的广告位
     :return:
@@ -184,7 +181,7 @@ def close_footer_banner():
             element.click()
 
 # TODO 显性等待太多..
-def view_articles_from_home_page():
+def view_articles_from_home_page(browser: WebDriver, limit: None):
     """
     在首页浏览几篇文章
     :return:
@@ -193,11 +190,11 @@ def view_articles_from_home_page():
     time.sleep(5)
     articles = browser.find_elements_by_css_selector('.title-row > .title')
     first_tab = browser.current_window_handle
-    for acticle in articles:
+    for acticle in articles[0:limit]:
         browser.switch_to.window(first_tab)
         browser.execute_script('window.scrollBy(0, 30)')
         if acticle.is_displayed():
-            close_footer_banner()
+            close_footer_banner(browser)
             acticle.click()
             time.sleep(2)
             browser.switch_to.window(browser.window_handles[-1])
